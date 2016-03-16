@@ -3,6 +3,7 @@
 #include "wifitester.h"
 #include "RSSIData.pbo.h"
 
+#include <algorithm>
 #include <stdio.h>
 #include <string.h>
 
@@ -16,11 +17,11 @@ void setup() {
   WiFi.on();
 }
 
-#define NUM_APS (100)
+#define NUM_APS (10)
 
 int seq = 0;
-WiFiAccessPoint aps[10];
-char str_buf[NUM_APS];
+WiFiAccessPoint aps[NUM_APS];
+char str_buf[20];
 const uint8_t delimiter[4] = { 0xab, 0xcd, 0xef, 0x12 };
 RSSIData data;
 
@@ -31,9 +32,10 @@ void loop() {
 
   int found = WiFi.scan(aps, NUM_APS);
   Serial.println("Finished scan");
-  for (int i = 0; i < found; i++) {
+  for (int i = 0; i < std::min(found, NUM_APS); i++) {
     WiFiAccessPoint &ap = aps[i];
 
+    Serial.println(ap.ssid);
     sprintf(str_buf, "%02X:%02X:%02X:%02X:%02X:%02X", ap.bssid[0], ap.bssid[1],
             ap.bssid[2], ap.bssid[3], ap.bssid[4], ap.bssid[5]);
     Serial.println(str_buf);
